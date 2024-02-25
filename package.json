@@ -1,0 +1,23 @@
+{
+  "name": "console-rewrite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write \"**/*.ts\"",
+    "build": "tsup src/index.ts --format=esm,cjs --dts --minify",
+    "build-fast": "tsup src/index.ts --format=esm,cjs --no-dts --minify",
+    "dev": "pnpm build-fast --watch",
+    "prepublish": "pnpm build"
+  },
+  "keywords": [],
+  "author": "domin-mnd",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.20",
+    "colorette": "^2.0.20",
+    "prettier": "^3.2.5",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  }
+}
