@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": "domin-mnd",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.11.20",
     "colorette": "^2.0.20",
