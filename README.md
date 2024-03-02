@@ -4,4 +4,4 @@
 - [x] Add a LICENSE
 - [ ] Make proper vitest tests
 - [ ] Modularize the code
-- [ ] Full polyfill support
+- [x] Full polyfill support (almost)

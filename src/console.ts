@@ -1,7 +1,11 @@
 import { fall } from ".";
-import { fallback, writeln } from "@/utils";
+import { write } from "@/write";
 import { memoize } from "./memoize";
 import { gray, yellowBright } from "colorette";
+import { inspect } from "util";
+import { Indent, IncrementIndentation, indent } from "./indent";
+import { Fallback } from "./fallback";
+import { colorStack } from "./color";
 
 export enum LogLevel {
   Log = "LOG",
@@ -11,99 +15,205 @@ export enum LogLevel {
   Debug = "DEBUG",
   Trace = "TRACE",
   Count = "COUNT",
+  Timer = "TIMER",
+  Dir = "DIR",
+  DirXML = "DIRXML",
+  Group = "GROUP",
 }
 
 export class AttributeConsole implements Console {
-  private countable = false;
-  private timestamp = false;
-  private memCounter = memoize<number>();
+  private memCounter = memoize<number>({ increment: true });
+  private memTimestamp = memoize<number>();
 
   Console!: console.ConsoleConstructor;
 
-  public get counts() {
-    this.countable = true;
-    return this;
-  }
-
-  public get timed() {
-    this.timestamp = true;
-    return this;
-  }
-
+  @Fallback
+  @Indent(LogLevel.Log)
   public log(...data: any[]): void {
-    if (fallback(fall.log, data)) return;
-    writeln(LogLevel.Log, ...data);
+    write(LogLevel.Log)
+      .label()
+      .content(...data)
+      .newline();
   }
 
+  @Fallback
+  @Indent(LogLevel.Error)
   public error(...data: any[]): void {
-    if (fallback(fall.error, data)) return;
-    writeln(LogLevel.Error, ...data);
+    write(LogLevel.Error)
+      .label()
+      .content(...data)
+      .newline();
   }
 
+  @Fallback
+  @Indent(LogLevel.Info)
   public info(...data: any[]): void {
-    if (fallback(fall.info, data)) return;
-    writeln(LogLevel.Info, ...data);
+    write(LogLevel.Info)
+      .label()
+      .content(...data)
+      .newline();
   }
 
+  @Fallback
+  @Indent(LogLevel.Debug)
   public debug(...data: any[]): void {
-    if (fallback(fall.debug, data)) return;
-    writeln(LogLevel.Debug, ...data);
+    write(LogLevel.Debug)
+      .label()
+      .content(...data)
+      .newline();
   }
 
+  @Fallback
+  @Indent(LogLevel.Warn)
   public warn(...data: any[]): void {
-    if (fallback(fall.warn, data)) return;
-    writeln(LogLevel.Warn, ...data);
+    write(LogLevel.Warn)
+      .label()
+      .content(...data)
+      .newline();
   }
 
+  @Fallback
+  @Indent(LogLevel.Trace)
   public trace(...data: any[]): void {
-    if (fallback(fall.trace, data)) return;
     // Only v8 compatible
     const stack = new Error().stack?.split("\n");
-    writeln(LogLevel.Trace, ...data);
-    stack?.shift(); // Remove the Error line
-    stack?.shift(); // Remove the trace caller line
-    stack?.forEach((line) => {
-      const parts = line.trimStart().split(" "); // 3 parts - "at", caller & path
-      parts[0] = gray(parts[0]);
-      parts[parts.length - 1] = gray(parts[parts.length - 1]);
-      process.stderr.write("\t" + parts.join(" ") + "\n");
-    });
+    stack?.splice(0, 4); // Remove the Error line, trace caller line, fallback & indent decorators
+    write(LogLevel.Trace)
+      .label()
+      .content(...data)
+      .content(gray(":"))
+      .content((stack?.map(colorStack) ?? []).join(""))
+      .newline();
   }
 
-  public assert(condition?: boolean, ...data: any[]): void {}
+  public assert(condition?: boolean, ...data: any[]): void {
+    if (!condition) this.warn(gray("Assertion failed:"), ...data);
+  }
 
   public clear(): void {
     fall.clear();
   }
 
+  @Fallback
+  @Indent(LogLevel.Count)
   public count(label?: string): void {
-    if (fallback(fall.count, [label])) return;
     this.memCounter.add(label ?? "default", 1);
-    writeln(
-      LogLevel.Count,
-      (label ?? "default") + gray(":") + " " + yellowBright(this.memCounter.get(label ?? "default") ?? 0)
-    );
+    write(LogLevel.Count)
+      .label()
+      .content(label ?? "default")
+      .content(gray(":"))
+      .content(" ")
+      .content(yellowBright(this.memCounter.get(label ?? "default") ?? 0))
+      .newline();
   }
 
+  @Fallback
   public countReset(label?: string): void {
-    if (fallback(fall.countReset, [label])) return;
     this.memCounter.remove(label ?? "default");
   }
 
-  public dir(item?: any, options?: any): void {}
-  public dirxml(...data: any[]): void {}
-  public group(...data: any[]): void {}
-  public groupCollapsed(...data: any[]): void {}
+  @Fallback
+  @Indent(LogLevel.Dir)
+  public dir(item?: any, options?: any): void {
+    write(LogLevel.Dir)
+      .label()
+      // Not using newline because of first element indent escape
+      .content("\n" + inspect(item, { colors: true, ...options }))
+      .newline();
+  }
+
+  @Fallback
+  @Indent(LogLevel.DirXML)
+  public dirxml(...data: any[]): void {
+    write(LogLevel.DirXML)
+      .label()
+      .content(...data)
+      .newline();
+  }
+
+  @Fallback
+  @Indent(LogLevel.Group)
+  @IncrementIndentation(1)
+  public group(...data: any[]): void {
+    if (data.length)
+      write(LogLevel.Group)
+        .label()
+        .content(...data)
+        .content(gray(":"))
+        .newline();
+  }
+
+  // No need for decorators because it's an alias for group
+  public groupCollapsed(...data: any[]): void {
+    this.group(...data);
+  }
+
+  @Fallback
+  @IncrementIndentation(-1)
   public groupEnd(): void {}
-  public table(tabularData?: any, properties?: string[]): void {}
-  public time(label?: string): void {}
-  public timeEnd(label?: string): void {}
-  public timeLog(label?: string, ...data: any[]): void {}
-  public timeStamp(label?: string): void {}
+
+  public table(tabularData?: any, properties?: string[]): void {
+    /**
+     * @todo Implement own table
+     */
+    fall.table(tabularData, properties);
+  }
+
+  @Fallback
+  public time(label?: string): void {
+    this.memTimestamp.add(label ?? "default", performance.now());
+  }
+
+  @Fallback
+  public timeEnd(label?: string): void {
+    performance.now();
+    const startDate = this.memTimestamp.get(label ?? "default");
+    if (!startDate)
+      return this.warn(
+        `No such label '${label ?? "default"}' for console.timeEnd()`
+      );
+
+    this.timeLog(label ?? "default");
+    this.memTimestamp.remove(label ?? "default");
+  }
+
+  @Fallback
+  @Indent(LogLevel.Timer)
+  public timeLog(label?: string, ...data: any[]): void {
+    const startDate = this.memTimestamp.get(label ?? "default");
+    const endDate = performance.now();
+
+    if (!startDate)
+      return this.warn(
+        `No such label '${label ?? "default"}' for console.timeLog()`
+      );
+
+    const writer = write(LogLevel.Timer)
+      .label()
+      .content(label ?? "default")
+      .content(":")
+      .content(" ")
+      .content(yellowBright(parseFloat((endDate - startDate).toFixed(3)) ?? 0))
+      .content("ms")
+      .newline();
+    if (!data.length) return;
+    writer
+      .content("\t")
+      .content(...data)
+      .newline();
+  }
+
+  public timeStamp(label?: string): void {
+    /**
+     * @todo Implement own timestamp
+     */
+    fall.timeStamp(label);
+  }
 
   public profile(label?: string): void {
     fall.profile(label);
   }
+
   public profileEnd(label?: string): void {
     fall.profileEnd(label);
   }

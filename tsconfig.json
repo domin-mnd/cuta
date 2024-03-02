@@ -8,8 +8,8 @@
     "incremental": true,
     "noEmit": true,
     "lib": ["dom", "dom.iterable", "esnext"],
-    "target": "esnext",
-    "module": "esnext",
+    "target": "ESNext",
+    "module": "ESNext",
     "moduleResolution": "node",
     "noImplicitReturns": false,
     "resolveJsonModule": true,
@@ -21,6 +21,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
+    "experimentalDecorators": true,
     "paths": {
       "@/*": ["src/*"],
     }
