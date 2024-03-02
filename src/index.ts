@@ -1,7 +1,7 @@
-import { AttributeConsole } from "@/console";
+import { NewConsole } from "@/console";
 
 // Make a copy of console for fallback purposes
 export const fall = Object.assign({}, console);
 
 // Prototype overwrite
-globalThis.console = new AttributeConsole();
+globalThis.console = new NewConsole();

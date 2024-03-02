@@ -21,7 +21,7 @@ export enum LogLevel {
   Group = "GROUP",
 }
 
-export class AttributeConsole implements Console {
+export class NewConsole implements Console {
   private memCounter = memoize<number>({ increment: true });
   private memTimestamp = memoize<number>();
 
