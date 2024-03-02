@@ -22,6 +22,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "experimentalDecorators": true,
+    "types": ["vitest/globals"],
     "paths": {
       "@/*": ["src/*"],
     }

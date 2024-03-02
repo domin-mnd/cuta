@@ -8,7 +8,8 @@
     "build": "tsup src/index.ts --format=esm,cjs --dts --minify",
     "build-fast": "tsup src/index.ts --format=esm,cjs --no-dts --minify",
     "dev": "pnpm build-fast --watch",
-    "prepublish": "pnpm build"
+    "prepublish": "pnpm build",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "domin-mnd",
@@ -18,6 +19,7 @@
     "colorette": "^2.0.20",
     "prettier": "^3.2.5",
     "tsup": "^8.0.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.3.1"
   }
 }
