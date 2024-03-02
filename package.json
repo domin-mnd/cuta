@@ -1,8 +1,10 @@
 {
   "name": "console-rewrite",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
     "format": "prettier --write \"**/*.ts\"",
     "build": "tsup src/index.ts --format=esm,cjs --dts --minify",

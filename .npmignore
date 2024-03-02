@@ -1,0 +1,8 @@
+# Dist only
+src
+public
+tests
+
+# Configs
+vite.config.ts
+tsconfig.json
