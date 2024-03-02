@@ -1,5 +1,5 @@
 import { gray } from "colorette";
-import type { LogLevel } from "./console";
+import type { LogLevel } from "@/console";
 import { write } from "@/write";
 
 let indentation = 0;

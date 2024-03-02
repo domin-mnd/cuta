@@ -1,11 +1,11 @@
 import { fall } from ".";
 import { write } from "@/write";
-import { memoize } from "./memoize";
+import { memoize } from "@/memoize";
 import { gray, yellowBright } from "colorette";
 import { inspect } from "util";
-import { Indent, IncrementIndentation, indent } from "./indent";
-import { Fallback } from "./fallback";
-import { colorStack } from "./color";
+import { Indent, IncrementIndentation } from "@/indent";
+import { Fallback } from "@/fallback";
+import { colorStack } from "@/color";
 
 export enum LogLevel {
   Log = "LOG",

@@ -1,7 +1,7 @@
 import { format } from "util";
-import { LogLevel } from "./console";
-import { colorLevel } from "./color";
-import { indent } from "./indent";
+import { LogLevel } from "@/console";
+import { colorLevel } from "@/color";
+import { indent } from "@/indent";
 
 export function validateString(data: string): string {
   return data

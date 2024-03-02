@@ -1,4 +1,5 @@
 import { fall } from ".";
+import type { ConsoleFunctions } from "@/types";
 
 export function fallback(
   functionToFallback: (...data: any[]) => any,
@@ -24,7 +25,7 @@ export function Fallback(
 ) {
   const method = descriptor.value;
   descriptor.value = function (...args: any) {
-    if (fallback(fall[name as keyof Console] as any, args)) return;
+    if (fallback(fall[name as ConsoleFunctions] as any, args)) return;
     method.apply(this, args);
   };
 }
