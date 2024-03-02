@@ -16,6 +16,7 @@ console.groupCollapsed("Some groupCollapsed");
 console.info("Lorem ipsum", "dolor", "sit amet");
 console.warn("Lorem ipsum", "dolor", "sit amet");
 console.assert(true === false, "Lorem ipsum", "assertion");
+console.assert(true === true, "Lorem ipsum", "assertion");
 console.error("Lorem ipsum", "dolor", "sit amet");
 console.groupEnd();
 console.debug("I debugged this shit for 2 hours");

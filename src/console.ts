@@ -86,6 +86,7 @@ export class NewConsole implements Console {
       .newline();
   }
 
+  @Fallback
   public assert(condition?: boolean, ...data: any[]): void {
     if (!condition) this.warn(gray("Assertion failed:"), ...data);
   }
