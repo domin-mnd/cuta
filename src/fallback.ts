@@ -9,13 +9,14 @@ export function fallback(
    * Getting path of the caller
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/stack#description Error.prototype.stack}
    */
-  const stackPath = new Error().stack?.split("\n")[3].trim();
+  const stackPaths = new Error().stack?.split("\n");
+  stackPaths?.splice(0, 2);
 
-  // If the path includes "node_modules" then we should fallback because it is probably a package that runs console.log or functions similar
-  const shouldFallback = stackPath?.includes("node_modules") ?? false;
+  // If one of paths include "node_modules" then it should fallback because it is probably a package that runs console.log or functions similar
+  const shouldFallback = stackPaths?.some((value) => value.includes("node_modules"));
   if (shouldFallback) functionToFallback(...data);
 
-  return shouldFallback;
+  return shouldFallback ?? false;
 }
 
 export function Fallback(
