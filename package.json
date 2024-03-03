@@ -1,6 +1,6 @@
 {
   "name": "cuta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Drop-in console enhancement",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
