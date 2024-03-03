@@ -127,9 +127,17 @@ export class NewConsole implements Console {
     incrementIndentation(1);
   }
 
-  // No need for decorators because it's an alias for group
+  @Fallback
   public groupCollapsed(...data: any[]): void {
-    this.group(...data);
+    // Not calling this.group so we don't add info to trace stack
+    if (data.length)
+      write(LogLevel.Group)
+        .content(indent())
+        .label()
+        .content(...data)
+        .content(gray(":"))
+        .newline();
+    incrementIndentation(1);
   }
 
   @Fallback
