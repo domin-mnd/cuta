@@ -1,0 +1,12 @@
+console.group();
+console.info("Hello world!");
+console.group();
+console.group();
+console.group();
+console.groupEnd();
+console.group("Group");
+console.groupEnd();
+console.groupEnd();
+console.groupEnd();
+console.groupEnd();
+console.warn("Hello world!");

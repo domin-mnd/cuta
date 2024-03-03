@@ -20,12 +20,12 @@
     "outDir": "./dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "experimentalDecorators": true,
-    "types": ["vitest/globals"],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-    }
+      "@/*": ["./src/*"],
+    },
+    "types": ["vitest/globals"],
   },
   "include": ["src", "tests"],
   "exclude": ["./*.d.ts", "node_modules"]

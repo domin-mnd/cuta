@@ -1,9 +1,12 @@
-import { fall } from ".";
-import type { ConsoleFunctions } from "@/types";
+export let fall = Object.assign({}, console);
+
+export function init(console: Console) {
+  fall = Object.assign({}, console);
+}
 
 export function fallback(
   functionToFallback: (...data: any[]) => any,
-  data: any[]
+  data: any[],
 ): boolean {
   /**
    * Getting path of the caller
@@ -13,7 +16,9 @@ export function fallback(
   stackPaths?.splice(0, 2);
 
   // If one of paths include "node_modules" then it should fallback because it is probably a package that runs console.log or functions similar
-  const shouldFallback = stackPaths?.some((value) => value.includes("node_modules"));
+  const shouldFallback = stackPaths?.some((value) =>
+    value.includes("node_modules"),
+  );
   if (shouldFallback) functionToFallback(...data);
 
   return shouldFallback ?? false;
@@ -22,11 +27,11 @@ export function fallback(
 export function Fallback(
   _target: any,
   name: string,
-  descriptor: PropertyDescriptor
+  descriptor: PropertyDescriptor,
 ) {
   const method = descriptor.value;
   descriptor.value = function (...args: any) {
-    if (fallback(fall[name as ConsoleFunctions] as any, args)) return;
+    if (fallback(fall[name as keyof Console] as any, args)) return;
     method.apply(this, args);
   };
 }

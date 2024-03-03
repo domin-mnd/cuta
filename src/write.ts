@@ -1,12 +1,12 @@
 import { format } from "util";
-import { LogLevel } from "@/console";
 import { colorLevel } from "@/color";
 import { indent } from "@/indent";
+import { LogLevel } from "@/level";
 
-export function validateString(data: string): string {
+export function validate(data: string): string {
   return data
     .split("\n")
-    .map((line, index) => index ? indent() + line : line)
+    .map((line, index) => (index ? indent() + line : line))
     .join("\n");
 }
 
@@ -30,7 +30,7 @@ export function write(ll: LogLevel): Writer {
       return this;
     },
     content(...data: any[]) {
-      process[type].write(validateString(format(...data)));
+      process[type].write(validate(format(...data)));
       return this;
     },
     newline() {

@@ -1,25 +1,11 @@
-import { fall } from ".";
 import { write } from "@/write";
 import { memoize } from "@/memoize";
 import { gray, yellowBright } from "colorette";
 import { inspect } from "util";
-import { Indent, IncrementIndentation } from "@/indent";
-import { Fallback } from "@/fallback";
+import { Indent, incrementIndentation, indent } from "@/indent";
+import { Fallback, fall } from "@/fallback";
 import { colorStack } from "@/color";
-
-export enum LogLevel {
-  Log = "LOG",
-  Info = "INFO",
-  Error = "ERROR",
-  Warn = "WARN",
-  Debug = "DEBUG",
-  Trace = "TRACE",
-  Count = "COUNT",
-  Timer = "TIMER",
-  Dir = "DIR",
-  DirXML = "DIRXML",
-  Group = "GROUP",
-}
+import { LogLevel } from "@/level";
 
 export class NewConsole implements Console {
   private memCounter = memoize<number>({ increment: true });
@@ -78,12 +64,9 @@ export class NewConsole implements Console {
     // Only v8 compatible
     const stack = new Error().stack?.split("\n");
     stack?.splice(0, 4); // Remove the Error line, trace caller line, fallback & indent decorators
-    write(LogLevel.Trace)
-      .label()
-      .content(...data)
-      .content(gray(":"))
-      .content((stack?.map(colorStack) ?? []).join(""))
-      .newline();
+    const writer = write(LogLevel.Trace).label();
+    if (data.length) writer.content(...data).content(gray(":"));
+    writer.content((stack?.map(colorStack) ?? []).join("")).newline();
   }
 
   @Fallback
@@ -133,15 +116,15 @@ export class NewConsole implements Console {
   }
 
   @Fallback
-  @Indent(LogLevel.Group)
-  @IncrementIndentation(1)
   public group(...data: any[]): void {
     if (data.length)
       write(LogLevel.Group)
+        .content(indent())
         .label()
         .content(...data)
         .content(gray(":"))
         .newline();
+    incrementIndentation(1);
   }
 
   // No need for decorators because it's an alias for group
@@ -150,8 +133,9 @@ export class NewConsole implements Console {
   }
 
   @Fallback
-  @IncrementIndentation(-1)
-  public groupEnd(): void {}
+  public groupEnd(): void {
+    incrementIndentation(-1);
+  }
 
   public table(tabularData?: any, properties?: string[]): void {
     /**
@@ -171,7 +155,7 @@ export class NewConsole implements Console {
     const startDate = this.memTimestamp.get(label ?? "default");
     if (!startDate)
       return this.warn(
-        `No such label '${label ?? "default"}' for console.timeEnd()`
+        `No such label '${label ?? "default"}' for console.timeEnd()`,
       );
 
     this.timeLog(label ?? "default");
@@ -186,13 +170,13 @@ export class NewConsole implements Console {
 
     if (!startDate)
       return this.warn(
-        `No such label '${label ?? "default"}' for console.timeLog()`
+        `No such label '${label ?? "default"}' for console.timeLog()`,
       );
 
     const writer = write(LogLevel.Timer)
       .label()
       .content(label ?? "default")
-      .content(":")
+      .content(gray(":"))
       .content(" ")
       .content(yellowBright(parseFloat((endDate - startDate).toFixed(3)) ?? 0))
       .content("ms")
