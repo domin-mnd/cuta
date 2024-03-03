@@ -127,18 +127,7 @@ export class NewConsole implements Console {
     incrementIndentation(1);
   }
 
-  @Fallback
-  public groupCollapsed(...data: any[]): void {
-    // Not calling this.group so we don't add info to trace stack
-    if (data.length)
-      write(LogLevel.Group)
-        .content(indent())
-        .label()
-        .content(...data)
-        .content(gray(":"))
-        .newline();
-    incrementIndentation(1);
-  }
+  public groupCollapsed = this.group;
 
   @Fallback
   public groupEnd(): void {
@@ -203,6 +192,6 @@ export class NewConsole implements Console {
     fall.timeStamp(label);
   }
 
-  public profile = (label?: string) => fall.profile(label);
-  public profileEnd = (label?: string) => fall.profileEnd(label);
+  public profile = fall.profile;
+  public profileEnd = fall.profileEnd;
 }

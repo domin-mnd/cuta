@@ -1,5 +1,5 @@
 {
-  "name": "qio",
+  "name": "cuta",
   "version": "0.1.0",
   "description": "Drop-in console enhancement",
   "main": "dist/index.js",
@@ -16,7 +16,7 @@
     "test:manual:original": "pnpm tsm --no-warnings tests/shell/%npm_config_path%.ts && pnpm --silent test:manual:modified",
     "test:manual:modified": "pnpm build --silent && pnpm tsm --no-warnings --import=\"./dist/index.mjs\" tests/shell/%npm_config_path%.ts"
   },
-  "keywords": [],
+  "keywords": ["console"],
   "author": "domin-mnd",
   "license": "MIT",
   "devDependencies": {

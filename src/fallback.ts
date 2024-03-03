@@ -13,7 +13,8 @@ export function fallback(
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/stack#description Error.prototype.stack}
    */
   const stackPaths = new Error().stack?.split("\n");
-  stackPaths?.splice(0, 3);
+  while (!stackPaths?.[0].includes("Object.<anonymous>"))
+    stackPaths?.splice(0, 1);
 
   // If one of paths include "node_modules" then it should fallback because it is probably a package that runs console.log or functions similar
   const shouldFallback = stackPaths?.some((value) =>
