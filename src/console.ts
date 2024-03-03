@@ -195,11 +195,6 @@ export class NewConsole implements Console {
     fall.timeStamp(label);
   }
 
-  public profile(label?: string): void {
-    fall.profile(label);
-  }
-
-  public profileEnd(label?: string): void {
-    fall.profileEnd(label);
-  }
+  public profile = (label?: string) => fall.profile(label);
+  public profileEnd = (label?: string) => fall.profileEnd(label);
 }
