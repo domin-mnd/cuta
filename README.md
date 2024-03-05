@@ -18,7 +18,6 @@ $ yarn add cuta
 $ pnpm add cuta
 ```
 
-> [!WARNING]
 > Cuta doesn't support browser API & Bun at the moment!
 
 # Usage
@@ -46,7 +45,6 @@ import "cuta";
 require("cuta");
 ```
 
-> [!NOTE]
 > There's no programmatic API configuration for Cuta.
 
 # Documentation
