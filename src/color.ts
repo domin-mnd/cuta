@@ -1,8 +1,8 @@
-import { bold, inverse, gray } from "colorette";
+import { bold, gray } from "ansis";
 import { colors, type LogLevel } from "@/level";
 
 export function colorLevel(level: LogLevel): string {
-  return colors[level](bold(inverse(" " + level + " ")));
+  return colors[level](bold.inverse` ${level} `);
 }
 
 export function colorStack(line: string): string {

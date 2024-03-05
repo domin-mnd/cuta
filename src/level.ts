@@ -1,5 +1,5 @@
 import {
-  type Color,
+  type Ansis,
   cyan,
   green,
   red,
@@ -10,7 +10,7 @@ import {
   white,
   black,
   redBright,
-} from "colorette";
+} from "ansis";
 
 export enum LogLevel {
   Log = "LOG",
@@ -26,7 +26,7 @@ export enum LogLevel {
   Group = "GROUP",
 }
 
-export const colors: Record<LogLevel, Color> = {
+export const colors: Record<LogLevel, Ansis> = {
   LOG: cyan,
   INFO: green,
   ERROR: red,

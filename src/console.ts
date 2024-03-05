@@ -1,6 +1,6 @@
 import { write } from "@/write";
 import { memoize } from "@/memoize";
-import { gray, yellowBright } from "colorette";
+import { gray, yellowBright } from "ansis";
 import { inspect } from "util";
 import { Indent, incrementIndentation, indent } from "@/indent";
 import { Fallback, fall } from "@/fallback";
@@ -65,13 +65,13 @@ export class NewConsole implements Console {
     const stack = new Error().stack?.split("\n");
     stack?.splice(0, 4); // Remove the Error line, trace caller line, fallback & indent decorators
     const writer = write(LogLevel.Trace).label();
-    if (data.length) writer.content(...data).content(gray(":"));
+    if (data.length) writer.content(...data).content(gray`:`);
     writer.content((stack?.map(colorStack) ?? []).join("")).newline();
   }
 
   @Fallback
   public assert(condition?: boolean, ...data: any[]): void {
-    if (!condition) this.warn(gray("Assertion failed:"), ...data);
+    if (!condition) this.warn(gray`Assertion failed:`, ...data);
   }
 
   public clear(): void {
@@ -85,9 +85,11 @@ export class NewConsole implements Console {
     write(LogLevel.Count)
       .label()
       .content(label ?? "default")
-      .content(gray(":"))
+      .content(gray`:`)
       .content(" ")
-      .content(yellowBright(this.memCounter.get(label ?? "default") ?? 0))
+      .content(
+        yellowBright((this.memCounter.get(label ?? "default") ?? 0).toString()),
+      )
       .newline();
   }
 
@@ -122,7 +124,7 @@ export class NewConsole implements Console {
         .content(indent())
         .label()
         .content(...data)
-        .content(gray(":"))
+        .content(gray`:`)
         .newline();
     incrementIndentation(1);
   }
@@ -173,9 +175,11 @@ export class NewConsole implements Console {
     const writer = write(LogLevel.Timer)
       .label()
       .content(label ?? "default")
-      .content(gray(":"))
+      .content(gray`:`)
       .content(" ")
-      .content(yellowBright(parseFloat((endDate - startDate).toFixed(3)) ?? 0))
+      .content(
+        yellowBright(parseFloat((endDate - startDate).toFixed(3)).toString()),
+      )
       .content("ms")
       .newline();
     if (!data.length) return;

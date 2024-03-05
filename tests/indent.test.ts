@@ -1,4 +1,4 @@
-import { gray } from "colorette";
+import { gray } from "ansis";
 import { incrementIndentation, indent } from "@/indent";
 
 describe("Indentation", () => {
@@ -8,19 +8,19 @@ describe("Indentation", () => {
 
   it("increments", () => {
     incrementIndentation(2);
-    expect(indent()).toBe(`${gray("|")}  ${gray("|")}  `);
+    expect(indent()).toBe(`${gray`|`}  ${gray`|`}  `);
     incrementIndentation(1);
-    expect(indent()).toBe(`${gray("|")}  ${gray("|")}  ${gray("|")}  `);
+    expect(indent()).toBe(`${gray`|`}  ${gray`|`}  ${gray`|`}  `);
   });
 
   it("decrements", () => {
     incrementIndentation(-1);
-    expect(indent()).toBe(`${gray("|")}  ${gray("|")}  `);
+    expect(indent()).toBe(`${gray`|`}  ${gray`|`}  `);
     incrementIndentation(-1);
-    expect(indent()).toBe(`${gray("|")}  `);
+    expect(indent()).toBe(`${gray`|`}  `);
   });
 
   it("persists value", () => {
-    expect(indent()).toBe(`${gray("|")}  `);
+    expect(indent()).toBe(`${gray`|`}  `);
   });
 });
