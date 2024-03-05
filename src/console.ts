@@ -6,17 +6,49 @@ import { Indent, incrementIndentation, indent } from "@/indent";
 import { Fallback, fall } from "@/fallback";
 import { colorStack } from "@/color";
 import { LogLevel } from "@/level";
+import type { ConsoleConstructorOptions } from "console";
 
-export class NewConsole implements Console {
+export class CutaConsole implements Console {
   private memCounter = memoize<number>({ increment: true });
   private memTimestamp = memoize<number>();
+  private options?: ConsoleConstructorOptions;
+  private stdout?: NodeJS.WritableStream;
 
   Console!: console.ConsoleConstructor;
+
+  // Overloading constructor because of ConsoleConstructor
+  constructor(options: ConsoleConstructorOptions);
+  constructor(
+    stdout: NodeJS.WritableStream,
+    stderr?: NodeJS.WritableStream,
+    ignoreErrors?: boolean
+  );
+  constructor(
+    stdout: NodeJS.WritableStream | ConsoleConstructorOptions,
+    private stderr?: NodeJS.WritableStream,
+    private ignoreErrors?: boolean
+  ) {
+    if ("stdout" in stdout) {
+      this.options = stdout;
+      this.stdout = stdout.stdout;
+    } else {
+      this.stdout = stdout;
+    }
+  }
+
+  private writer(ll: LogLevel) {
+    return write(
+      ll,
+      this.stdout,
+      this.stderr ?? this.options?.stderr,
+      this.ignoreErrors ?? this.options?.ignoreErrors
+    );
+  }
 
   @Fallback
   @Indent(LogLevel.Log)
   public log(...data: any[]): void {
-    write(LogLevel.Log)
+    this.writer(LogLevel.Log)
       .label()
       .content(...data)
       .newline();
@@ -25,7 +57,7 @@ export class NewConsole implements Console {
   @Fallback
   @Indent(LogLevel.Error)
   public error(...data: any[]): void {
-    write(LogLevel.Error)
+    this.writer(LogLevel.Error)
       .label()
       .content(...data)
       .newline();
@@ -34,7 +66,7 @@ export class NewConsole implements Console {
   @Fallback
   @Indent(LogLevel.Info)
   public info(...data: any[]): void {
-    write(LogLevel.Info)
+    this.writer(LogLevel.Info)
       .label()
       .content(...data)
       .newline();
@@ -43,7 +75,7 @@ export class NewConsole implements Console {
   @Fallback
   @Indent(LogLevel.Debug)
   public debug(...data: any[]): void {
-    write(LogLevel.Debug)
+    this.writer(LogLevel.Debug)
       .label()
       .content(...data)
       .newline();
@@ -52,7 +84,7 @@ export class NewConsole implements Console {
   @Fallback
   @Indent(LogLevel.Warn)
   public warn(...data: any[]): void {
-    write(LogLevel.Warn)
+    this.writer(LogLevel.Warn)
       .label()
       .content(...data)
       .newline();
@@ -64,7 +96,7 @@ export class NewConsole implements Console {
     // Only v8 compatible
     const stack = new Error().stack?.split("\n");
     stack?.splice(0, 4); // Remove the Error line, trace caller line, fallback & indent decorators
-    const writer = write(LogLevel.Trace).label();
+    const writer = this.writer(LogLevel.Trace).label();
     if (data.length) writer.content(...data).content(gray`:`);
     writer.content((stack?.map(colorStack) ?? []).join("")).newline();
   }
@@ -82,13 +114,13 @@ export class NewConsole implements Console {
   @Indent(LogLevel.Count)
   public count(label?: string): void {
     this.memCounter.add(label ?? "default", 1);
-    write(LogLevel.Count)
+    this.writer(LogLevel.Count)
       .label()
       .content(label ?? "default")
       .content(gray`:`)
       .content(" ")
       .content(
-        yellowBright((this.memCounter.get(label ?? "default") ?? 0).toString()),
+        yellowBright((this.memCounter.get(label ?? "default") ?? 0).toString())
       )
       .newline();
   }
@@ -101,7 +133,7 @@ export class NewConsole implements Console {
   @Fallback
   @Indent(LogLevel.Dir)
   public dir(item?: any, options?: any): void {
-    write(LogLevel.Dir)
+    this.writer(LogLevel.Dir)
       .label()
       // Not using newline because of first element indent escape
       .content("\n" + inspect(item, { colors: true, ...options }))
@@ -111,7 +143,7 @@ export class NewConsole implements Console {
   @Fallback
   @Indent(LogLevel.DirXML)
   public dirxml(...data: any[]): void {
-    write(LogLevel.DirXML)
+    this.writer(LogLevel.DirXML)
       .label()
       .content(...data)
       .newline();
@@ -120,7 +152,7 @@ export class NewConsole implements Console {
   @Fallback
   public group(...data: any[]): void {
     if (data.length)
-      write(LogLevel.Group)
+      this.writer(LogLevel.Group)
         .content(indent())
         .label()
         .content(...data)
@@ -154,7 +186,7 @@ export class NewConsole implements Console {
     const startDate = this.memTimestamp.get(label ?? "default");
     if (!startDate)
       return this.warn(
-        `No such label '${label ?? "default"}' for console.timeEnd()`,
+        `No such label '${label ?? "default"}' for console.timeEnd()`
       );
 
     this.timeLog(label ?? "default");
@@ -169,16 +201,16 @@ export class NewConsole implements Console {
 
     if (!startDate)
       return this.warn(
-        `No such label '${label ?? "default"}' for console.timeLog()`,
+        `No such label '${label ?? "default"}' for console.timeLog()`
       );
 
-    const writer = write(LogLevel.Timer)
+    const writer = this.writer(LogLevel.Timer)
       .label()
       .content(label ?? "default")
       .content(gray`:`)
       .content(" ")
       .content(
-        yellowBright(parseFloat((endDate - startDate).toFixed(3)).toString()),
+        yellowBright(parseFloat((endDate - startDate).toFixed(3)).toString())
       )
       .content("ms")
       .newline();

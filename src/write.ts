@@ -10,10 +10,8 @@ export function validate(data: string): string {
     .join("\n");
 }
 
-export function stdType(ll: LogLevel): "stderr" | "stdout" {
-  return [LogLevel.Warn, LogLevel.Error, LogLevel.Trace].includes(ll)
-    ? "stderr"
-    : "stdout";
+export function isStderr(ll: LogLevel): boolean {
+  return [LogLevel.Warn, LogLevel.Error, LogLevel.Trace].includes(ll);
 }
 
 interface Writer {
@@ -22,19 +20,38 @@ interface Writer {
   newline(): Writer;
 }
 
-export function write(ll: LogLevel): Writer {
-  const type = stdType(ll);
+export const dummy: Writer = {
+  label() {
+    return this;
+  },
+  content(..._data) {
+    return this;
+  },
+  newline() {
+    return this;
+  },
+};
+
+export function write(
+  ll: LogLevel,
+  stdout: NodeJS.WritableStream = process.stdout,
+  stderr: NodeJS.WritableStream = process.stderr,
+  ignoreErrors: boolean = false
+): Writer {
+  const IS_STDERR = isStderr(ll);
+  const writer = IS_STDERR ? stderr : stdout;
+  if (ignoreErrors && IS_STDERR) return dummy;
   return {
     label() {
-      process[type].write(colorLevel(ll) + " ");
+      writer.write(colorLevel(ll) + " ");
       return this;
     },
     content(...data: any[]) {
-      process[type].write(validate(format(...data)));
+      writer.write(validate(format(...data)));
       return this;
     },
     newline() {
-      process[type].write("\n");
+      writer.write("\n");
       return this;
     },
   };

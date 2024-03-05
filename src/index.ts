@@ -1,8 +1,8 @@
-import { NewConsole } from "@/console";
+import { CutaConsole } from "@/console";
 import { init } from "@/fallback";
 
 // Make a copy of console for fallback purposes
 init(console);
 
 // Prototype overwrite
-globalThis.console = new NewConsole();
+globalThis.console = new CutaConsole(process.stdout, process.stderr);
