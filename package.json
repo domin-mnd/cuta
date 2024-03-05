@@ -28,6 +28,9 @@
   "bugs": {
     "url": "https://github.com/domin-mnd/cuta/issues"
   },
+  "engines": {
+    "node": ">=12.20.0"
+  },
   "homepage": "https://github.com/domin-mnd/cuta#readme",
   "devDependencies": {
     "@types/node": "^20.11.20",
