@@ -13,8 +13,11 @@
     "prepublish": "pnpm build",
     "test": "pnpm --silent build --silent && vitest",
     "test:manual": "npm run --silent test:manual:original",
+    "test:example": "npm run --silent test:manual:example:original",
     "test:manual:original": "pnpm tsm --no-warnings tests/shell/%npm_config_path%.ts && pnpm --silent test:manual:modified",
-    "test:manual:modified": "pnpm build --silent && pnpm tsm --no-warnings --import=\"./dist/index.mjs\" tests/shell/%npm_config_path%.ts"
+    "test:manual:modified": "pnpm build --silent && pnpm tsm --no-warnings --import=\"./dist/index.mjs\" tests/shell/%npm_config_path%.ts",
+    "test:manual:example:original": "pnpm tsm --no-warnings tests/examples/%npm_config_path%.ts  && pnpm --silent test:manual:example:modified",
+    "test:manual:example:modified": "pnpm build --silent && pnpm tsm --no-warnings --import=\"./dist/index.mjs\" tests/examples/%npm_config_path%.ts"
   },
   "repository": {
     "type": "git",
