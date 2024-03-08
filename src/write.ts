@@ -14,7 +14,7 @@ export function isStderr(ll: LogLevel): boolean {
   return [LogLevel.Warn, LogLevel.Error, LogLevel.Trace].includes(ll);
 }
 
-interface Writer {
+export interface Writer {
   label(): Writer;
   content(...data: any[]): Writer;
   newline(): Writer;

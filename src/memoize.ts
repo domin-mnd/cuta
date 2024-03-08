@@ -27,3 +27,5 @@ export function memoize<T extends any = any>(options?: Memoize) {
     },
   };
 }
+
+export type Memory<T extends any = any> = ReturnType<typeof memoize<T>>;

@@ -1,4 +1,4 @@
-import { CutaConsole } from "@/console";
+import { CutaConsole } from "@/class";
 import { init } from "@/fallback";
 
 // Make a copy of console for fallback purposes
