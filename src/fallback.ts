@@ -17,7 +17,7 @@ export function fallback(
     stackPaths?.splice(0, 1);
 
   // If one of paths include "node_modules" then it should fallback because it is probably a package that runs console.log or functions similar
-  const shouldFallback = stackPaths?.some((value) =>
+  const shouldFallback = stackPaths?.some(value =>
     value.includes("node_modules"),
   );
   if (shouldFallback) functionToFallback(...data);
@@ -26,12 +26,12 @@ export function fallback(
 }
 
 export function Fallback(
-  _target: any,
+  _target: unknown,
   name: string,
   descriptor: PropertyDescriptor,
 ) {
   const method = descriptor.value;
-  descriptor.value = function (...args: any) {
+  descriptor.value = function (...args: unknown[]) {
     if (fallback(fall[name as keyof Console] as any, args)) return;
     method.apply(this, args);
   };

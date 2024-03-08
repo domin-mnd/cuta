@@ -14,12 +14,12 @@ export class Base {
   constructor(
     stdout: NodeJS.WritableStream,
     stderr?: NodeJS.WritableStream,
-    ignoreErrors?: boolean
+    ignoreErrors?: boolean,
   );
   constructor(
     stdout: NodeJS.WritableStream | ConsoleConstructorOptions,
     private stderr?: NodeJS.WritableStream,
-    private ignoreErrors?: boolean
+    private ignoreErrors?: boolean,
   ) {
     if ("stdout" in stdout) {
       this.options = stdout;
@@ -34,7 +34,7 @@ export class Base {
       ll,
       this.stdout,
       this.stderr ?? this.options?.stderr,
-      this.ignoreErrors ?? this.options?.ignoreErrors
+      this.ignoreErrors ?? this.options?.ignoreErrors,
     );
   }
 }

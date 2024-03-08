@@ -5,7 +5,7 @@ export class Mirror extends Base {
   public profile(label?: string): void {
     return fall.profile(label);
   }
-  
+
   public profileEnd(label?: string): void {
     return fall.profileEnd(label);
   }

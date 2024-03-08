@@ -1,4 +1,5 @@
 import { spawnSync } from "child_process";
+import { join } from "path";
 import {
   black,
   blue,
@@ -12,14 +13,17 @@ import {
   yellow,
   yellowBright,
 } from "ansis";
-import { join } from "path";
+import { describe, expect, it } from "vitest";
 
 interface ShellReturn {
   stdout: string;
   stderr: string;
 }
 
-function shell(executable: keyof Console, modify?: boolean): ShellReturn {
+function shell(
+  executable: keyof Console,
+  modify?: boolean,
+): ShellReturn {
   const options = [
     "tsm",
     "--no-warnings",
@@ -37,8 +41,13 @@ function shell(executable: keyof Console, modify?: boolean): ShellReturn {
 
 describe("Modified console log", async () => {
   // Getting data of every shell script
-  const data: Record<keyof Console, ShellReturn> = Object.keys(console).reduce(
-    (prev, cur) => ({ ...prev, [cur]: shell(cur as keyof Console, true) }),
+  const data: Record<keyof Console, ShellReturn> = Object.keys(
+    console,
+  ).reduce(
+    (prev, cur) =>
+      Object.assign(prev, {
+        [cur]: shell(cur as keyof Console, true),
+      }),
     {},
   ) as Record<keyof Console, ShellReturn>;
 
@@ -56,13 +65,13 @@ ${gray`|`}  ${cyan.bold.inverse` LOG `} Some objects { hello: 'world' }
   it("error", () => {
     expect(data.error.stdout).toBe("");
     expect(data.error.stderr).toBe(
-      red.bold.inverse` ERROR ` + " Hello world!\n",
+      `${red.bold.inverse` ERROR `} Hello world!\n`,
     );
   });
 
   it("debug", () => {
     expect(data.debug.stdout).toBe(
-      blue.bold.inverse` DEBUG ` + " Hello world!\n",
+      `${blue.bold.inverse` DEBUG `} Hello world!\n`,
     );
     expect(data.debug.stderr).toBe("");
   });
@@ -70,7 +79,7 @@ ${gray`|`}  ${cyan.bold.inverse` LOG `} Some objects { hello: 'world' }
   it("warn", () => {
     expect(data.warn.stdout).toBe("");
     expect(data.warn.stderr).toBe(
-      yellow.bold.inverse` WARN ` + " Hello world!\n",
+      `${yellow.bold.inverse` WARN `} Hello world!\n`,
     );
   });
 
@@ -78,17 +87,20 @@ ${gray`|`}  ${cyan.bold.inverse` LOG `} Some objects { hello: 'world' }
     expect(data.trace.stdout).toBe("");
     // Test for no label trace
     expect(data.trace.stderr).toContain(
-      magenta.bold.inverse` TRACE ` + " \n     " + gray("at"),
+      `${magenta.bold.inverse` TRACE `} \n     ${gray("at")}`,
     );
     // Test for grouped & labeled trace
     expect(data.trace.stderr).toContain(
-      `${magenta.bold.inverse` TRACE `} Hello world!${gray`:`}\n${gray`|`}       ${gray("at")} `,
+      `${magenta.bold
+        .inverse` TRACE `} Hello world!${gray`:`}\n${gray`|`}       ${gray(
+        "at",
+      )} `,
     );
   });
 
   it("info", () => {
     expect(data.info.stdout).toBe(
-      green.bold.inverse` INFO ` + " Hello world!\n",
+      `${green.bold.inverse` INFO `} Hello world!\n`,
     );
     expect(data.info.stderr).toBe("");
   });
@@ -96,10 +108,9 @@ ${gray`|`}  ${cyan.bold.inverse` LOG `} Some objects { hello: 'world' }
   it("assert", () => {
     expect(data.assert.stdout).toBe("");
     expect(data.assert.stderr).toBe(
-      yellow.bold.inverse` WARN ` +
-        " " +
-        gray("Assertion failed:") +
-        " Hello world!\n",
+      `${yellow.bold.inverse` WARN `} ${gray(
+        "Assertion failed:",
+      )} Hello world!\n`,
     );
   });
 
@@ -108,9 +119,11 @@ ${gray`|`}  ${cyan.bold.inverse` LOG `} Some objects { hello: 'world' }
   });
 
   it("count", () => {
-    const expectedData = `${gray.bold.inverse` COUNT `} Hello world!${gray`:`} ${yellowBright`1`}
+    const expectedData = `${gray.bold
+      .inverse` COUNT `} Hello world!${gray`:`} ${yellowBright`1`}
 ${gray.bold.inverse` COUNT `} default${gray`:`} ${yellowBright`1`}
-${gray.bold.inverse` COUNT `} Hello world!${gray`:`} ${yellowBright`2`}
+${gray.bold
+  .inverse` COUNT `} Hello world!${gray`:`} ${yellowBright`2`}
 ${gray.bold.inverse` COUNT `} Counter${gray`:`} ${yellowBright`1`}
 ${gray.bold.inverse` COUNT `} default${gray`:`} ${yellowBright`2`}
 ${gray.bold.inverse` COUNT `} default${gray`:`} ${yellowBright`3`}
@@ -121,9 +134,11 @@ ${gray.bold.inverse` COUNT `} default${gray`:`} ${yellowBright`1`}
   });
 
   it("countReset", () => {
-    const expectedData = `${gray.bold.inverse` COUNT `} default${gray`:`} ${yellowBright`1`}
+    const expectedData = `${gray.bold
+      .inverse` COUNT `} default${gray`:`} ${yellowBright`1`}
 ${gray.bold.inverse` COUNT `} default${gray`:`} ${yellowBright`1`}
-${gray.bold.inverse` COUNT `} Hello world!${gray`:`} ${yellowBright`1`}
+${gray.bold
+  .inverse` COUNT `} Hello world!${gray`:`} ${yellowBright`1`}
 `;
     expect(data.countReset.stdout).toBe(expectedData);
     expect(data.countReset.stderr).toBe("");
@@ -159,11 +174,13 @@ ${gray`|`}  }
   it("group", () => {
     const expectedData = `${green.bold.inverse` INFO `} Hello world!
 ${redBright.bold.inverse` GROUP `} Group 3${gray`:`}
-${gray`|`}  ${gray`|`}  ${redBright.bold.inverse` GROUP `} Group 4${gray`:`}
+${gray`|`}  ${gray`|`}  ${redBright.bold
+      .inverse` GROUP `} Group 4${gray`:`}
 `;
     expect(data.group.stdout).toBe(expectedData);
     expect(data.group.stderr).toBe(
-      `${gray`|`}  ${gray`|`}  ${gray`|`}  ${yellow.bold.inverse` WARN `} Hello world!\n`,
+      `${gray`|`}  ${gray`|`}  ${gray`|`}  ${yellow.bold
+        .inverse` WARN `} Hello world!\n`,
     );
   });
 
@@ -174,7 +191,8 @@ ${gray`|`}  ${gray`|`}  ${redBright.bold.inverse` GROUP `} Group 4${gray`:`}
 
   it("groupEnd", () => {
     const expectedData = `${gray`|`}  ${green.bold.inverse` INFO `} Hello world!
-${gray`|`}  ${gray`|`}  ${gray`|`}  ${redBright.bold.inverse` GROUP `} Group${gray`:`}
+${gray`|`}  ${gray`|`}  ${gray`|`}  ${redBright.bold
+      .inverse` GROUP `} Group${gray`:`}
 `;
     expect(data.groupEnd.stdout).toBe(expectedData);
     expect(data.groupEnd.stderr).toBe(
@@ -193,9 +211,10 @@ ${gray`|`}  ${gray`|`}  ${gray`|`}  ${redBright.bold.inverse` GROUP `} Group${gr
       `${white.bold.inverse` TIMER `} default${gray`:`} `,
       "ms",
       // \x1b[93m for bright yellow, resets with yellowBright() at the end
-      `${white.bold.inverse` TIMER `} Hello world!${gray`:`} \x1b[93m2`,
+      `${white.bold
+        .inverse` TIMER `} Hello world!${gray`:`} \x1b[93m2`,
     ];
-    expectedData.forEach((expected) =>
+    expectedData.forEach(expected =>
       expect(data.time.stdout).toContain(expected),
     );
     expect(data.time.stderr).toBe("");
@@ -206,11 +225,12 @@ ${gray`|`}  ${gray`|`}  ${gray`|`}  ${redBright.bold.inverse` GROUP `} Group${gr
       `${white.bold.inverse` TIMER `} default${gray`:`} `,
       "ms",
     ];
-    expectedData.forEach((expected) =>
+    expectedData.forEach(expected =>
       expect(data.timeLog.stdout).toContain(expected),
     );
     expect(data.timeLog.stderr).toBe(
-      `${yellow.bold.inverse` WARN `} No such label 'Hello world!' for console.timeLog()\n`,
+      `${yellow.bold
+        .inverse` WARN `} No such label 'Hello world!' for console.timeLog()\n`,
     );
   });
 
@@ -219,11 +239,12 @@ ${gray`|`}  ${gray`|`}  ${gray`|`}  ${redBright.bold.inverse` GROUP `} Group${gr
       `${white.bold.inverse` TIMER `} default${gray`:`} `,
       "ms",
     ];
-    expectedData.forEach((expected) =>
+    expectedData.forEach(expected =>
       expect(data.timeEnd.stdout).toContain(expected),
     );
     expect(data.timeEnd.stderr).toBe(
-      `${yellow.bold.inverse` WARN `} No such label 'default' for console.timeEnd()\n`,
+      `${yellow.bold
+        .inverse` WARN `} No such label 'default' for console.timeEnd()\n`,
     );
   });
 });

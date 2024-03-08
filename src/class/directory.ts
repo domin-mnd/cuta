@@ -1,8 +1,8 @@
-import { Fallback } from "@/fallback";
-import { LogLevel } from "@/level";
-import { Indent } from "@/indent";
-import { Base } from "@/class/base";
 import { inspect } from "util";
+import { Base } from "@/class/base";
+import { Fallback } from "@/fallback";
+import { Indent } from "@/indent";
+import { LogLevel } from "@/level";
 
 export class Directory extends Base {
   @Fallback
@@ -11,7 +11,7 @@ export class Directory extends Base {
     this.writer(LogLevel.Dir)
       .label()
       // Not using newline because of first element indent escape
-      .content("\n" + inspect(item, { colors: true, ...options }))
+      .content(`\n${inspect(item, { colors: true, ...options })}`)
       .newline();
   }
 

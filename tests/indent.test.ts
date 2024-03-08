@@ -1,5 +1,6 @@
-import { gray } from "ansis";
 import { incrementIndentation, indent } from "@/indent";
+import { gray } from "ansis";
+import { describe, expect, it } from "vitest";
 
 describe("Indentation", () => {
   it("returns", () => {

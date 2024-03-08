@@ -15,7 +15,9 @@ export class Counter extends Base {
       .content(gray`:`)
       .content(" ")
       .content(
-        yellowBright((this.memCounter.get(label ?? "default") ?? 0).toString())
+        yellowBright(
+          (this.memCounter.get(label ?? "default") ?? 0).toString(),
+        ),
       )
       .newline();
   }

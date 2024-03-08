@@ -36,14 +36,14 @@ export function write(
   ll: LogLevel,
   stdout: NodeJS.WritableStream = process.stdout,
   stderr: NodeJS.WritableStream = process.stderr,
-  ignoreErrors: boolean = false
+  ignoreErrors: boolean = false,
 ): Writer {
   const IS_STDERR = isStderr(ll);
   const writer = IS_STDERR ? stderr : stdout;
   if (ignoreErrors && IS_STDERR) return dummy;
   return {
     label() {
-      writer.write(colorLevel(ll) + " ");
+      writer.write(`${colorLevel(ll)} `);
       return this;
     },
     content(...data: any[]) {

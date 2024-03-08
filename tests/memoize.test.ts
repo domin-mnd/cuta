@@ -1,4 +1,5 @@
 import { memoize } from "@/memoize";
+import { describe, expect, it } from "vitest";
 
 describe("Incremental memoize", () => {
   const mem = memoize<number>({

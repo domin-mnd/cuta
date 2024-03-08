@@ -16,7 +16,7 @@ export class Timer extends Primitives {
     const startDate = this.memTimestamp.get(label ?? "default");
     if (!startDate)
       return this.warn(
-        `No such label '${label ?? "default"}' for console.timeEnd()`
+        `No such label '${label ?? "default"}' for console.timeEnd()`,
       );
 
     this.timeLog(label ?? "default");
@@ -31,7 +31,7 @@ export class Timer extends Primitives {
 
     if (!startDate)
       return this.warn(
-        `No such label '${label ?? "default"}' for console.timeLog()`
+        `No such label '${label ?? "default"}' for console.timeLog()`,
       );
 
     const writer = this.writer(LogLevel.Timer)
@@ -40,7 +40,9 @@ export class Timer extends Primitives {
       .content(gray`:`)
       .content(" ")
       .content(
-        yellowBright(parseFloat((endDate - startDate).toFixed(3)).toString())
+        yellowBright(
+          parseFloat((endDate - startDate).toFixed(3)).toString(),
+        ),
       )
       .content("ms")
       .newline();
